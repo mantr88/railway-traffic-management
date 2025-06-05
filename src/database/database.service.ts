@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { Pool, QueryResult } from 'pg';
 import { ConfigService } from '@nestjs/config';
+import { runMigrations } from './migrate';
 
 @Injectable()
 export class DatabaseService implements OnModuleInit, OnModuleDestroy {
@@ -32,6 +33,10 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     try {
       await this.pool.query('SELECT NOW()');
       this.logger.log('Database connected successfully');
+      // console.log('NODE_ENV:', this.configService.get('NODE_ENV'));
+      // if (this.configService.get('NODE_ENV') === 'production') {
+      await runMigrations(this.pool);
+      // }
     } catch (error) {
       this.logger.error('Database connection failed:', error);
       throw error;
