@@ -4,3 +4,7 @@ export class StationResponseDto {
   code: number;
   createdAt: Date;
 }
+
+export class StationNameResponseDto {
+  stationName: string;
+}
