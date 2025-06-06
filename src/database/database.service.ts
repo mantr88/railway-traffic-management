@@ -33,10 +33,10 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     try {
       await this.pool.query('SELECT NOW()');
       this.logger.log('Database connected successfully');
-      // console.log('NODE_ENV:', this.configService.get('NODE_ENV'));
-      // if (this.configService.get('NODE_ENV') === 'production') {
-      await runMigrations(this.pool);
-      // }
+
+      if (this.configService.get('NODE_ENV') === 'production') {
+        await runMigrations(this.pool);
+      }
     } catch (error) {
       this.logger.error('Database connection failed:', error);
       throw error;
@@ -59,7 +59,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
       if (process.env.NODE_ENV === 'development') {
         this.logger.log('Query executed:', {
           text,
-          duration,
+          duration: `${duration}ms`,
           rows: result.rowCount,
         });
       }
