@@ -38,7 +38,7 @@ export class StationsController {
     @Body() createStationDto: CreateStationDto,
   ): Promise<Station> {
     this.logger.log('Creating a new station', createStationDto);
-    return this.stationsService.create(createStationDto);
+    return this.stationsService.addStation(createStationDto);
   }
 
   @Get()
@@ -80,7 +80,7 @@ export class StationsController {
     @Param('stationCode') stationCode: string,
   ): Promise<StationNameResponseDto> {
     this.logger.log(`Fetching station with code: ${stationCode}`);
-    const station = await this.stationsService.getByCode(+stationCode);
+    const station = await this.stationsService.getStationByCode(+stationCode);
     return station;
   }
 }

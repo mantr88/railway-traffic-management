@@ -17,9 +17,10 @@ export class StationsService {
     private readonly logger: Logger,
   ) {}
 
-  async create(createStationDto: CreateStationDto): Promise<Station> {
+  async addStation(createStationDto: CreateStationDto): Promise<Station> {
     try {
-      const newStation = await this.stationsRepository.create(createStationDto);
+      const newStation =
+        await this.stationsRepository.createStation(createStationDto);
       return newStation;
     } catch (error) {
       this.handleUpdateError(error, 'Failed to create station');
@@ -28,15 +29,15 @@ export class StationsService {
 
   async getAll(): Promise<Station[]> {
     try {
-      return await this.stationsRepository.findAll();
+      return await this.stationsRepository.findAllStations();
     } catch (error) {
       this.handleUpdateError(error, 'Failed to fetch stations');
     }
   }
 
-  async getByCode(code: number): Promise<StationNameResponseDto> {
+  async getStationByCode(code: number): Promise<StationNameResponseDto> {
     try {
-      const station = await this.stationsRepository.findByCode(code);
+      const station = await this.stationsRepository.findStationByCode(code);
 
       if (!station) {
         throw new NotFoundException(`Station with code ${code} not found`);

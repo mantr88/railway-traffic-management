@@ -8,12 +8,12 @@ import { StationNameResponseDto } from './dto/station-response.dto';
 export class StationsRepository {
   constructor(private databaseService: DatabaseService) {}
 
-  async create(createStationDto: CreateStationDto): Promise<Station> {
+  async createStation(createStationDto: CreateStationDto): Promise<Station> {
     try {
       const query = `
       INSERT INTO stations (name, code) 
       VALUES ($1, $2) 
-      RETURNING *
+      RETURNING id, name, code, created_at AS "createdAt"
     `;
 
       const createdStation = await this.databaseService.query<Station>(query, [
@@ -34,7 +34,7 @@ export class StationsRepository {
     }
   }
 
-  async findAll(): Promise<Station[]> {
+  async findAllStations(): Promise<Station[]> {
     try {
       const query =
         'SELECT id, name, code, created_at FROM stations ORDER BY name';
@@ -49,7 +49,9 @@ export class StationsRepository {
     }
   }
 
-  async findByCode(code: number): Promise<StationNameResponseDto | null> {
+  async findStationByCode(
+    code: number,
+  ): Promise<StationNameResponseDto | null> {
     try {
       const query = 'SELECT name FROM stations WHERE code = $1';
       const result = await this.databaseService.query<Station>(query, [code]);
