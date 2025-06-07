@@ -7,18 +7,18 @@ import {
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 
-export class AddWagonsDto {
-  @IsArray({ message: 'Список вагонів має бути масивом' })
+export class UpdateWagonsDto {
+  @IsArray({ message: 'Wagon list must be an array' })
   @ArrayMinSize(1, {
-    message: 'Необхідно вказати принаймні один вагон для додавання',
+    message: 'At least one wagon must be specified for addition',
   })
-  @ArrayUnique({ message: 'Список вагонів не може містити дублікатів' })
-  @IsString({ each: true, message: 'Кожен вагон має бути рядком' })
+  @ArrayUnique({ message: 'Wagon list cannot contain duplicates' })
+  @IsString({ each: true, message: 'Each wagon must be a string' })
   @Transform(({ value }) => value?.map((wagon: string) => wagon?.trim()))
   @Matches(/^[0-9]{2}[КПЛ]$/, {
     each: true,
     message:
-      'Кожен вагон має бути у форматі "01К", "02П", "03Л" де К-купе, П-плацкарт, Л-люкс',
+      'Each wagon must be in the format "01К", "02П", "03Л" where К is coupe, П is platzkart, Л is luxe',
   })
   wagons: string[];
 }

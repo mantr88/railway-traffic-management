@@ -5,7 +5,7 @@ import { Pool } from 'pg';
 export async function runMigrations(pool: Pool) {
   const migrations = [
     '0001_create_stations.sql',
-    '0002_create_trains_and_wagons_tables.sql',
+    '0002_create_trains_table.sql',
   ];
 
   for (const migration of migrations) {
