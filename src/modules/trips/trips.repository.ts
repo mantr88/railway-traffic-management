@@ -91,4 +91,49 @@ RETURNING
       throw new Error(`Failed to find existing trip: ${error.message}`);
     }
   }
+
+  async searchTrips(
+    departureStationCode: number,
+    arrivalStationCode: number,
+    date: string,
+  ): Promise<Trip[]> {
+    const query = `
+      SELECT 
+        id, 
+        train_number, 
+        departure_station_code, 
+        arrival_station_code, 
+        departure_time, 
+        arrival_time, 
+        created_at, 
+        updated_at
+      FROM trips
+      WHERE 
+        departure_station_code = $1 
+        AND arrival_station_code = $2 
+        AND DATE(departure_time) = $3
+      ORDER BY departure_time;
+    `;
+
+    const values = [departureStationCode, arrivalStationCode, date];
+    try {
+      const result = await this.db.query<any>(query, values);
+      return result.rows.map(
+        (row) =>
+          new Trip(
+            row.train_number,
+            row.departure_station_code,
+            row.arrival_station_code,
+            new Date(row.departure_time),
+            new Date(row.arrival_time),
+            row.id,
+            row.created_at,
+            row.updated_at,
+          ),
+      );
+    } catch (error) {
+      console.error('Failed to search trips:', error.message);
+      throw new Error(`Failed to search trips: ${error.message}`);
+    }
+  }
 }

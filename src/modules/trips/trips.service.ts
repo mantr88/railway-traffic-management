@@ -65,6 +65,36 @@ export class TripsService {
     }
   }
 
+  async searchTrips(
+    departureStationCode: number,
+    arrivalStationCode: number,
+    date: string,
+  ): Promise<Trip[]> {
+    try {
+      if (departureStationCode === arrivalStationCode) {
+        throw new BadRequestException(
+          'Departure station and arrival station cannot be the same',
+        );
+      }
+      const trips = await this.tripsRepository.searchTrips(
+        departureStationCode,
+        arrivalStationCode,
+        date,
+      );
+      if (!trips || trips.length === 0) {
+        throw new NotFoundException(
+          `No trips found from station ${departureStationCode} to station ${arrivalStationCode} on date ${date}`,
+        );
+      }
+      return trips;
+    } catch (error) {
+      this.handleUpdateError(
+        error,
+        `Failed to search trips from station ${departureStationCode} to station ${arrivalStationCode} on date ${date}`,
+      );
+    }
+  }
+
   private handleUpdateError(error: any, text: string): never {
     console.error(`${text}:`, error.message);
     this.logger.error(text, error);
