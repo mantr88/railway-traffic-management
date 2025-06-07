@@ -4,7 +4,7 @@ import {
   OnModuleDestroy,
   Logger,
 } from '@nestjs/common';
-import { Pool, QueryResult } from 'pg';
+import { Pool, PoolClient, QueryResult } from 'pg';
 import { ConfigService } from '@nestjs/config';
 import { runMigrations } from './migrate';
 
@@ -68,6 +68,24 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     } catch (error) {
       this.logger.error('Database query error:', { text, params, error });
       throw error;
+    }
+  }
+
+  async transaction<T>(
+    callback: (client: PoolClient) => Promise<T>,
+  ): Promise<T> {
+    const client = await this.pool.connect();
+
+    try {
+      await client.query('BEGIN');
+      const result = await callback(client);
+      await client.query('COMMIT');
+      return result;
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
     }
   }
 }
