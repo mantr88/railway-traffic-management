@@ -8,11 +8,12 @@ import {
   Post,
 } from '@nestjs/common';
 import { StationsService } from './stations.service';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateStationDto } from './dto/create-station.dto';
 import { Station } from './entities/station.entity';
 import { StationNameResponseDto } from './dto/station-response.dto';
 
+@ApiTags('stations')
 @Controller('stations')
 export class StationsController {
   constructor(
