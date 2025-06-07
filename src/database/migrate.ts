@@ -6,6 +6,7 @@ export async function runMigrations(pool: Pool) {
   const migrations = [
     '0001_create_stations.sql',
     '0002_create_trains_table.sql',
+    '0003_create_trips_table.sql',
   ];
 
   for (const migration of migrations) {
