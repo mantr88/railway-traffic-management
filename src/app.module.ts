@@ -7,6 +7,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { getCacheConfig } from './configs/cache.config';
 import { StationsModule } from './modules/stations/stations.module';
 import { TrainsModule } from './modules/trains/trains.module';
+import { TripsModule } from './modules/trips/trips.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { TrainsModule } from './modules/trains/trains.module';
     }),
     StationsModule,
     TrainsModule,
+    TripsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
