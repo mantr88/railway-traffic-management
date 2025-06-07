@@ -6,23 +6,31 @@ import {
   Body,
   Param,
   HttpStatus,
+  UseInterceptors,
+  Inject,
+  Logger,
 } from '@nestjs/common';
 import { TrainsService } from './trains.service';
 import { CreateTrainDto } from './dto/create-train.dto';
 import { UpdateWagonsDto } from './dto/add-wagons.dto';
 import { Train } from './entities/train.entity';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { CacheInterceptor, CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @ApiTags('trains')
 @Controller('trains')
 export class TrainsController {
-  constructor(private readonly trainsService: TrainsService) {}
+  constructor(
+    private readonly trainsService: TrainsService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private readonly logger: Logger,
+  ) {}
 
   @Post()
   @ApiOperation({
     summary: 'Create a new train',
-    description:
-      'Creates a new train with the provided train number and wagons.',
+    description: 'Creates a new train with the provided train number and wagons.',
   })
   @ApiBody({ type: CreateTrainDto })
   @ApiResponse({
@@ -38,10 +46,16 @@ export class TrainsController {
     description: 'Invalid train data or train already exists',
   })
   async createTrain(@Body() createTrainDto: CreateTrainDto) {
-    return this.trainsService.createTrain(createTrainDto);
+    const train = await this.trainsService.createTrain(createTrainDto);
+
+    const cacheKey = `train:${train.trainNumber}`;
+    await this.cacheManager.set(cacheKey, train, 60000);
+
+    return train;
   }
 
   @Get(':trainNumber')
+  @UseInterceptors(CacheInterceptor)
   @ApiOperation({
     summary: 'Get train by number',
     description: 'Retrieves a train by its unique train number.',
@@ -58,10 +72,19 @@ export class TrainsController {
     status: HttpStatus.INTERNAL_SERVER_ERROR,
     description: 'Failed to fetch train',
   })
-  async getTrainByNumber(
-    @Param('trainNumber') trainNumber: string,
-  ): Promise<Train> {
-    return this.trainsService.getTrainByNumber(trainNumber);
+  async getTrainByNumber(@Param('trainNumber') trainNumber: string): Promise<Train> {
+    const cacheKey = `train:${trainNumber}`;
+    const cachedTrain = await this.cacheManager.get<Train>(cacheKey);
+
+    if (cachedTrain) {
+      this.logger.log(`Returning cached train: ${trainNumber}`);
+      return cachedTrain;
+    }
+
+    const train = await this.trainsService.getTrainByNumber(trainNumber);
+    await this.cacheManager.set(cacheKey, train, 60000);
+
+    return train;
   }
 
   @Patch(':trainNumber/add-wagons')
@@ -90,9 +113,15 @@ export class TrainsController {
     @Param('trainNumber') trainNumber: string,
     @Body() addWagonsDto: UpdateWagonsDto,
   ) {
-    return this.trainsService.addWagons(trainNumber, addWagonsDto.wagons);
+    const updatedTrain = await this.trainsService.addWagons(trainNumber, addWagonsDto.wagons);
+
+    const cacheKey = `train:${trainNumber}`;
+    await this.cacheManager.set(cacheKey, updatedTrain, 60000);
+
+    return updatedTrain;
   }
 
+  @Patch(':trainNumber/remove-wagons')
   @ApiOperation({
     summary: 'Remove wagons from a train',
     description: 'Removes specified wagons from an existing train.',
@@ -114,11 +143,15 @@ export class TrainsController {
     status: HttpStatus.INTERNAL_SERVER_ERROR,
     description: 'Failed to remove wagons from train',
   })
-  @Patch(':trainNumber/remove-wagons')
   async removeWagons(
     @Param('trainNumber') trainNumber: string,
     @Body() removeWagonsDto: UpdateWagonsDto,
   ) {
-    return this.trainsService.removeWagons(trainNumber, removeWagonsDto.wagons);
+    const updatedTrain = await this.trainsService.removeWagons(trainNumber, removeWagonsDto.wagons);
+
+    const cacheKey = `train:${trainNumber}`;
+    await this.cacheManager.set(cacheKey, updatedTrain, 60000);
+
+    return updatedTrain;
   }
 }
