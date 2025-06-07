@@ -1,4 +1,3 @@
-// config/cache.config.ts
 import { CacheModuleOptions } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-redis-store';
 

@@ -1,98 +1,272 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🚄 Railway Traffic Management API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A comprehensive REST API for managing railway operations including stations, trains, wagons, and trips. Built with modern backend technologies and clean architecture principles.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🔥 Live Demo
 
-## Description
+**API Base URL:** `https://railway-traffic-management-production.up.railway.app/`  
+**Swagger Documentation:** `{API Base URL}/api/v1/swagger-html` (available only local)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 📋 Overview
 
-## Project setup
+This project implements a complete railway management system that handles:
 
-```bash
-$ pnpm install
+- **Station Management** - Create and retrieve railway stations
+- **Train Operations** - Manage trains and their wagon compositions
+- **Trip Planning** - Schedule and search railway trips
+- **Data Validation** - Comprehensive input validation with Ukrainian railway standards
+- **Performance** - Redis caching with 60-second TTL for optimal response times
+
+## 🛠 Tech Stack
+
+### Backend Framework
+
+- **NestJS** - Progressive Node.js framework with TypeScript
+- **PostgreSQL** - Reliable relational database with raw SQL queries
+- **Redis** - High-performance caching layer
+
+### Architecture & Tools
+
+- **TypeScript** - Type-safe development
+- **Class Validator** - Robust input validation
+- **Swagger/OpenAPI** - Comprehensive API documentation
+
+### Development Tools
+
+- **ESLint & Prettier** - Code quality and formatting
+
+## 🏗 Architecture
+
+The application follows clean architecture principles with clear separation of concerns:
+
+```
+src/
+├── modules/
+│   ├── stations/     # Station management
+│   ├── trains/       # Train and wagon operations
+│   └── trips/        # Trip scheduling and search
+├── database/
+│   ├── migrations/   # SQL schema migrations
+│   └── database.service.ts
+├── configs/          # Configuration files
+└── main.ts          # Application bootstrap
 ```
 
-## Compile and run the project
+### Design Patterns
 
-```bash
-# development
-$ pnpm run start
+- **Repository Pattern** - Data access abstraction
+- **Service Layer** - Business logic encapsulation
+- **DTO Pattern** - Data transfer and validation
+- **Dependency Injection** - Loose coupling and testability
 
-# watch mode
-$ pnpm run start:dev
+## 🎯 Key Features
 
-# production mode
-$ pnpm run start:prod
+### 🚉 Station Management
+
+- Create stations with Ukrainian naming validation
+- 7-digit station codes starting with "22"
+- Retrieve all stations or search by code
+
+### 🚄 Train Operations
+
+- Create trains with Cyrillic naming (e.g., "001Л")
+- Manage wagon compositions (К-купе, П-плацкарт, Л-люкс)
+- Add/remove wagons with duplicate prevention
+- Automatic wagon ordering by number
+
+### 🎫 Trip Management
+
+- Schedule trips between stations
+- Validate departure/arrival time logic
+- Search trips by route and date
+- Prevent duplicate trip scheduling
+
+### ⚡ Performance Features
+
+- **Redis Caching** - 60-second TTL on all GET endpoints
+- **Database Indexing** - Optimized queries for search operations
+- **Connection Pooling** - Efficient database connection management
+
+## 🔧 Installation & Setup
+
+### Prerequisites
+
+- Node.js 18+
+- PostgreSQL 12+
+- Redis 6+ (optional, falls back to in-memory cache)
+
+### Local Development
+
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/your-username/railway-traffic-management.git
+   cd railway-traffic-management
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   npm install
+   ```
+
+3. **Environment setup**
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   Configure your `.env` file:
+
+   ```env
+   # Database
+   DB_HOST=
+   DB_PORT=
+   DB_NAME=railway_db
+   DB_USER=
+   DB_PASSWORD=
+
+   # Redis (optional)
+   REDIS_HOST=
+   REDIS_PORT=
+
+   # Application
+   PORT=
+   NODE_ENV=
+   ```
+
+4. **Database setup**
+
+   ```bash
+   # Create database
+   createdb railway_db
+
+   # Migrations will run automatically in production
+   # For development, you can run them manually if needed
+   ```
+
+5. **Start development server**
+
+   ```bash
+   npm run dev
+   ```
+
+6. **Access the application**
+   - API: `http://localhost:3000`
+   - Swagger UI: `http://localhost:3000/api/v1/swagger-html`
+
+## 📚 API Documentation
+
+### Core Endpoints
+
+#### Stations
+
+```http
+POST   /stations              # Create station
+GET    /stations              # Get all stations
+GET    /stations/:code        # Get station by code
 ```
 
-## Run tests
+#### Trains
 
-```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+```http
+POST   /trains                     # Create train
+GET    /trains/:trainNumber        # Get train by number
+PATCH  /trains/:trainNumber/add-wagons     # Add wagons
+PATCH  /trains/:trainNumber/remove-wagons  # Remove wagons
 ```
 
-## Deployment
+#### Trips
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ pnpm install -g mau
-$ mau deploy
+```http
+POST   /trips                 # Create trip
+GET    /trips/search          # Search trips by route and date
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Example Requests
 
-## Resources
+**Create Station:**
 
-Check out a few resources that may come in handy when working with NestJS:
+```json
+POST /stations
+{
+  "name": "Київ-Пасажирський",
+  "code": 2200001
+}
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+**Create Train:**
 
-## Support
+```json
+POST /trains
+{
+  "trainNumber": "001Л",
+  "wagons": ["01К", "02П", "03Л"]
+}
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+**Search Trips:**
 
-## Stay in touch
+```http
+GET /trips/search?departureStationCode=2200001&arrivalStationCode=2200002&date=2024-12-25
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## 🚀 Deployment
 
-## License
+### Production Build
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```bash
+npm run build
+npm run start:prod
+```
+
+### Environment Variables (Production)
+
+```env
+NODE_ENV=production
+DATABASE_URL=postgresql://user:password@host:port/database
+REDIS_URL=redis://host:port
+PORT=3000
+```
+
+## 🔍 Validation Rules
+
+The API implements strict validation following Ukrainian railway standards:
+
+- **Station Names**: Minimum 3 characters, Cyrillic letters, numbers, hyphens, apostrophes
+- **Station Codes**: 7-digit numbers starting with "22" (2200000-2299999)
+- **Train Numbers**: 3 digits + Cyrillic letter (e.g., "001Л")
+- **Wagon Format**: 2 digits + class letter (01К, 02П, 03Л)
+- **Time Validation**: Arrival time must be after departure time
+- **Route Logic**: Departure and arrival stations cannot be identical
+
+## 🎯 Technical Highlights
+
+### Database Design
+
+- **Referential Integrity** - Foreign key constraints ensure data consistency
+- **Indexing Strategy** - Optimized indexes for common query patterns
+- **Raw SQL** - Direct SQL queries for maximum performance and control
+
+### Caching Strategy
+
+- **Redis Integration** - Primary cache with fallback to in-memory
+- **Configurable TTL** - 60-second cache expiration
+- **Cache Keys** - Structured naming for easy management
+
+### Error Handling
+
+- **Validation Pipes** - Input sanitization and validation
+- **Database Error Handling** - Graceful handling of constraint violations
+
+## 👨‍💻 Developer
+
+**Anton Petrenko**
+
+- GitHub: [GitHub profile](https://github.com/mantr88)
+- LinkedIn: [https://www.linkedin.com/in/ant-petrenko/](https://www.linkedin.com/in/ant-petrenko/)
+- Email: paa2017sh@gmail.com
+
+---
+
+_Built with ❤️ using NestJS, PostgreSQL, and modern backend practices_
