@@ -8,7 +8,13 @@ import {
   Post,
 } from '@nestjs/common';
 import { StationsService } from './stations.service';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CreateStationDto } from './dto/create-station.dto';
 import { Station } from './entities/station.entity';
 import { StationNameResponseDto } from './dto/station-response.dto';
@@ -64,6 +70,12 @@ export class StationsController {
   @ApiOperation({
     summary: 'Get station by code',
     description: 'Retrieves a station by its unique code.',
+  })
+  @ApiParam({
+    name: 'stationCode',
+    description: 'Unique code of the station to retrieve',
+    type: 'number',
+    required: true,
   })
   @ApiResponse({
     status: HttpStatus.OK,
