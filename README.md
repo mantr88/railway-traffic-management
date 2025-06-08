@@ -5,7 +5,7 @@ A comprehensive REST API for managing railway operations including stations, tra
 ## 🔥 Live Demo
 
 **API Base URL:** `https://railway-traffic-management-production.up.railway.app/`  
-**Swagger Documentation:** `{API Base URL}/api/v1/swagger-html` (available only local)
+**Swagger Documentation:** `https://railway-traffic-management-production.up.railway.app/api/v1/swagger-html`
 
 ## 📋 Overview
 
