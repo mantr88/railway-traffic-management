@@ -31,10 +31,29 @@ export class StationsController {
     summary: 'Create a new station',
     description: 'Creates a new station with the provided details.',
   })
-  @ApiBody({ type: CreateStationDto })
+  @ApiBody({
+    type: CreateStationDto,
+    examples: {
+      example1: {
+        summary: 'Kyiv Central Station',
+        value: {
+          name: 'Київ-Пасажирський',
+          code: 2200001,
+        },
+      },
+    },
+  })
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: 'Station created successfully',
+    schema: {
+      example: {
+        id: 1,
+        name: 'Київ-Пасажирський',
+        code: 2200001,
+        createdAt: '2024-12-25T10:30:00.000Z',
+      },
+    },
   })
   @ApiResponse({
     status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -58,6 +77,22 @@ export class StationsController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'List of stations retrieved successfully',
+    schema: {
+      example: [
+        {
+          id: 1,
+          name: 'Київ-Пасажирський',
+          code: 2200001,
+          createdAt: '2024-12-25T10:30:00.000Z',
+        },
+        {
+          id: 2,
+          name: 'Львів',
+          code: 2200120,
+          createdAt: '2024-12-25T11:00:00.000Z',
+        },
+      ],
+    },
   })
   @ApiResponse({
     status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -88,13 +123,23 @@ export class StationsController {
   })
   @ApiParam({
     name: 'stationCode',
-    description: 'Unique code of the station to retrieve',
+    description: 'Unique code of the station to retrieve (7-digit number starting with 22)',
     type: 'number',
     required: true,
+    example: 2200001,
+    schema: {
+      minimum: 2200000,
+      maximum: 2299999,
+    },
   })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Station retrieved successfully',
+    schema: {
+      example: {
+        stationName: 'Київ-Пасажирський',
+      },
+    },
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,

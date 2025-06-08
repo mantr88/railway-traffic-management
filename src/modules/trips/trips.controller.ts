@@ -30,10 +30,36 @@ export class TripsController {
     summary: 'Create a new trip',
     description: 'Creates a new trip with the provided details.',
   })
-  @ApiBody({ type: CreateTripDto })
+  @ApiBody({
+    type: CreateTripDto,
+    examples: {
+      example1: {
+        summary: 'Kyiv to Lviv express trip',
+        value: {
+          trainNumber: '001Л',
+          departureStationCode: 2200001,
+          arrivalStationCode: 2200120,
+          departureTime: '2024-12-25T10:30:00.000Z',
+          arrivalTime: '2024-12-25T16:45:00.000Z',
+        },
+      },
+    },
+  })
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: 'Trip created successfully',
+    schema: {
+      example: {
+        id: 1,
+        trainNumber: '001Л',
+        departureStationCode: 2200001,
+        arrivalStationCode: 2200120,
+        departureTime: '2024-12-25T10:30:00.000Z',
+        arrivalTime: '2024-12-25T16:45:00.000Z',
+        createdAt: '2024-12-25T08:00:00.000Z',
+        updatedAt: '2024-12-25T08:00:00.000Z',
+      },
+    },
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
@@ -46,12 +72,8 @@ export class TripsController {
   async createTrip(@Body() createTripDto: CreateTripDto): Promise<Trip> {
     const trip = await this.tripsService.createTrip(createTripDto);
 
-    // Очищуємо кеш для всіх можливих пошуків цього маршруту
-    // Оскільки ключ кешу містить точну дату/час, очищуємо по шаблону
     const baseCachePattern = `trips:search:${createTripDto.departureStationCode}:${createTripDto.arrivalStationCode}:`;
 
-    // Примітка: У production середовищі краще використовувати Redis SCAN для пошуку ключів за шаблоном
-    // Для простоти тут ми просто очищуємо кеш з тим самим значенням дати
     await this.cacheManager.del(`${baseCachePattern}${createTripDto.departureTime}`);
 
     this.logger.log(
@@ -70,21 +92,59 @@ export class TripsController {
   @ApiQuery({
     name: 'departureStationCode',
     required: true,
-    description: 'Code of the departure station',
+    type: 'number',
+    description: 'Code of the departure station (7-digit number starting with 22)',
+    example: 2200001,
+    schema: {
+      minimum: 2200000,
+      maximum: 2299999,
+    },
   })
   @ApiQuery({
     name: 'arrivalStationCode',
     required: true,
-    description: 'Code of the arrival station',
+    type: 'number',
+    description: 'Code of the arrival station (7-digit number starting with 22)',
+    example: 2200120,
+    schema: {
+      minimum: 2200000,
+      maximum: 2299999,
+    },
   })
   @ApiQuery({
     name: 'date',
     required: true,
+    type: 'string',
     description: 'Date of the trip in YYYY-MM-DDTHH:mm:ss.sssZ format',
+    example: '2024-12-25T08:00:00.000Z',
   })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'List of trips found based on the search criteria',
+    schema: {
+      example: [
+        {
+          id: 1,
+          trainNumber: '001Л',
+          departureStationCode: 2200001,
+          arrivalStationCode: 2200120,
+          departureTime: '2024-12-25T10:30:00.000Z',
+          arrivalTime: '2024-12-25T16:45:00.000Z',
+          createdAt: '2024-12-25T08:00:00.000Z',
+          updatedAt: '2024-12-25T08:00:00.000Z',
+        },
+        {
+          id: 2,
+          trainNumber: '007Л',
+          departureStationCode: 2200001,
+          arrivalStationCode: 2200120,
+          departureTime: '2024-12-25T22:00:00.000Z',
+          arrivalTime: '2024-12-26T06:30:00.000Z',
+          createdAt: '2024-12-25T08:30:00.000Z',
+          updatedAt: '2024-12-25T08:30:00.000Z',
+        },
+      ],
+    },
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
