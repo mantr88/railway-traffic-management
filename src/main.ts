@@ -23,9 +23,8 @@ async function bootstrap() {
     .setVersion('1.0')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  if (process.env.NODE_ENV !== 'production') {
-    SwaggerModule.setup('api/v1/swagger-html', app, documentFactory);
-  }
+
+  SwaggerModule.setup('api/v1/swagger-html', app, documentFactory);
 
   const port = process.env.PORT || 3000;
   await app.listen(port, '0.0.0.0', async () => {
