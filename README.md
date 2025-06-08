@@ -265,7 +265,7 @@ The API implements strict validation following Ukrainian railway standards:
 
 - GitHub: [GitHub profile](https://github.com/mantr88)
 - LinkedIn: [https://www.linkedin.com/in/ant-petrenko/](https://www.linkedin.com/in/ant-petrenko/)
-- Email: paa2017sh@gmail.com
+- Email: antpetrenko23@gmail.com
 
 ---
 
